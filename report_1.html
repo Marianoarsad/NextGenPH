@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serving the Public During a Blackout (Simple Version) - Deep Research Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #1a1a1a;
+            background: #ffffff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        .header {
+            background: #003d5c;
+            color: white;
+            padding: 25px 40px;
+            border-bottom: 3px solid #002840;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-meta {
+            font-size: 13px;
+            color: #b8d4e6;
+            display: flex;
+            gap: 25px;
+        }
+
+        .metrics-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0;
+            border-bottom: 2px solid #003d5c;
+        }
+
+        .metric {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-right: 1px solid #d1d5db;
+            text-align: center;
+        }
+
+        .metric:last-child {
+            border-right: none;
+        }
+
+        .metric-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #003d5c;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .content {
+            padding: 30px 40px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #003d5c;
+            margin: 32px 0 16px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #003d5c;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            line-height: 1.3;
+        }
+
+        .subsection-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 24px 0 12px 0;
+            line-height: 1.4;
+        }
+
+        .executive-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #003d5c;
+        }
+
+        .executive-summary p {
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        p {
+            margin-bottom: 14px;
+            line-height: 1.7;
+            text-align: left;
+        }
+
+        /* Better paragraph spacing in content sections */
+        .content > p,
+        .section p {
+            margin-bottom: 16px;
+        }
+
+        .findings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .finding-card {
+            background: #f8f9fa;
+            padding: 18px;
+            border-left: 3px solid #003d5c;
+        }
+
+        .finding-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #003d5c;
+            margin-bottom: 10px;
+        }
+
+        .finding-card p {
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 13px;
+        }
+
+        .data-table th {
+            background: #003d5c;
+            color: white;
+            padding: 10px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        ul, ol {
+            margin: 16px 0 16px 28px;
+            padding-left: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+            padding-left: 8px;
+        }
+
+        /* Nested lists */
+        li ul, li ol {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* Better bullet/number spacing */
+        ol {
+            list-style-position: outside;
+            padding-left: 0;
+        }
+
+        ul {
+            list-style-position: outside;
+            padding-left: 0;
+        }
+
+        .key-insight {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-left: 3px solid #003d5c;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .key-insight strong {
+            color: #003d5c;
+            font-weight: 600;
+        }
+
+        .citation {
+            color: #003d5c;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            position: relative;
+            padding: 2px 4px;
+            background: #f0f7fc;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+        }
+
+        .citation:hover {
+            background: #003d5c;
+            color: white;
+        }
+
+        /* Attribution Gradients (2025 Enhancement) */
+        .citation-tooltip {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 8px;
+            background: white;
+            border: 2px solid #003d5c;
+            box-shadow: 0 4px 12px rgba(0, 61, 92, 0.15);
+            padding: 12px;
+            min-width: 300px;
+            max-width: 500px;
+            z-index: 1000;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .citation:hover .citation-tooltip {
+            display: block;
+        }
+
+        .tooltip-title {
+            font-weight: 700;
+            color: #003d5c;
+            margin-bottom: 8px;
+            font-size: 13px;
+            border-bottom: 1px solid #d1d5db;
+            padding-bottom: 6px;
+        }
+
+        .tooltip-source {
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .tooltip-claim {
+            background: #f8f9fa;
+            padding: 8px;
+            margin-top: 8px;
+            border-left: 3px solid #003d5c;
+            font-size: 11px;
+        }
+
+        .tooltip-claim-label {
+            font-weight: 600;
+            color: #003d5c;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .evidence-chain {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #d1d5db;
+        }
+
+        .evidence-chain-label {
+            font-weight: 600;
+            color: #003d5c;
+            font-size: 11px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .evidence-step {
+            padding: 6px;
+            background: #f8f9fa;
+            margin-bottom: 4px;
+            font-size: 11px;
+            border-left: 2px solid #d1d5db;
+            padding-left: 8px;
+        }
+
+        .bibliography {
+            background: #f8f9fa;
+            padding: 30px;
+            margin-top: 40px;
+            border-left: 4px solid #003d5c;
+        }
+
+        .bibliography-content {
+            background: #f8f9fa;
+            padding: 20px 0;
+        }
+
+        .bib-entry {
+            margin-bottom: 18px;
+            padding-left: 50px;
+            text-indent: -50px;
+            line-height: 1.6;
+            font-size: 13px;
+        }
+
+        .bib-number {
+            color: #003d5c;
+            font-weight: 700;
+            margin-right: 8px;
+        }
+
+        .bib-entry a {
+            color: #003d5c;
+            word-wrap: break-word;
+            text-decoration: none;
+        }
+
+        .bib-entry a:hover {
+            text-decoration: underline;
+        }
+
+        .compact-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .compact-list li {
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .info-box {
+            background: white;
+            border: 1px solid #d1d5db;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .info-box h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #003d5c;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .highlight-stat {
+            font-weight: 700;
+            color: #003d5c;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        @media print {
+            .container {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .metrics-dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .findings-grid {
+                grid-template-columns: 1fr;
+            }
+            .compact-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Serving the Public During a Blackout (Simple Version)</h1>
+            <div class="header-meta">
+                <span>27 July 2026</span>
+                <span>•</span>
+                <span>87 Sources</span>
+            </div>
+        </div>
+
+        <div class="metrics-dashboard"><div class="metric"><div class="metric-number">16.2%</div><div class="metric-label">How much buying power poor households lost (vs. 3.4% for the rich)</div></div><div class="metric"><div class="metric-number">3.5M</div><div class="metric-label">Filipinos who could fall into poverty in the worst case</div></div><div class="metric"><div class="metric-number">₱2.7B</div><div class="metric-label">What DSWD says in-person lines 'saved' — at a real human cost</div></div><div class="metric"><div class="metric-number">5%</div><div class="metric-label">Internet access among the poorest households</div></div></div>
+
+        <div class="content">
+            <div class="section"><h2 class="section-title">A Simple Guide: How Can the Philippine Government Keep Helping People During the Energy Crisis?</h2>
+
+<p><strong>Report date:</strong> July 27, 2026
+<strong>Sources used:</strong> 87 | <strong>Time period covered:</strong> February to July 2026
+</p>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">Quick Summary (Read This First)</h2>
+
+<p>On March 24, 2026, the Philippines declared a <strong>State of National Energy Emergency</strong>. This is a formal announcement that lets the government use special emergency powers to deal with a crisis. It happened because of a war in the Middle East that made oil and fuel scarce and expensive around the world. The Philippines was the <em>first country in the world</em> to make this kind of declaration [1][3].
+</p>
+
+<p>Four months later, there are two very different stories to tell.
+</p>
+
+<p><strong>Story one:</strong> The Asian Development Bank (ADB), a big international lender that helps countries in Asia, says the Philippines handled the crisis better than almost any other country in the region. They gave the Philippines credit for using seven out of eight major strategies that experts recommend [38].
+</p>
+
+<p><strong>Story two:</strong> In those same four months, people collapsed from heat exhaustion — and at least one person died — while waiting in long lines just to get a ₱5,000 (about $85) fuel subsidy [13]. The Philippine General Hospital had to run on backup generators for six hours, and patients had to fan themselves with battery-powered fans because the air conditioning was off [26]. An 80-year-old man in Laguna province died because a rolling blackout shut off the machine he needed to breathe [26].
+</p>
+
+<p><strong>So what's the real problem?</strong> It's not that the government made bad decisions. It's not that they didn't spend enough money. The real problem is <strong>the last step — actually getting help into people's hands.</strong> Think of it like a relay race: the government did a great job planning the race and picking excellent runners, but dropped the baton right before the finish line. They built a smart, well-designed relief program — and then delivered it the old-fashioned way: long lines, paper forms, and ID checks — even though they already had the digital tools to do it faster and safer.
+</p>
+
+<p>Here are six big takeaways:
+</p>
+
+<ol>
+<li><strong>The crisis hits poor people much harder than rich people, and it isn't over.</strong> Poor households are losing 16.2% of their spending power. Rich households are only losing 3.4% [6]. Up to 3.5 million more Filipinos could fall into poverty in a worst-case scenario. And the crisis flared up again in July, pushing diesel prices up by over ₱10 per liter [43][44]. This is not the time to assume things are getting better.</li>
+<li><strong>The real bottleneck isn't money — it's messy beneficiary lists.</strong> The Department of Social Welfare and Development (DSWD), the agency in charge of social assistance, had to switch back to old-fashioned in-person payouts because their lists of who should get aid were full of duplicate names and "ghost" (fake) beneficiaries. That decision saved money, but it made real people suffer in the heat [12][17].</li>
+<li><strong>The government treated "saving energy" and "keeping services running" as two separate problems — but only measured the first one.</strong> Offices were told to cut electricity use by 10–20% and switch to a shorter work week [20][23]. But nobody set a rule for which public services are <em>not allowed</em> to shut down.</li>
+<li><strong>The way relief money is funded creates a trap.</strong> The ₱155-billion relief package is paid for partly by cutting government agencies' own budgets by 20% [31][32][33]. That means the same offices trying to <em>deliver</em> help are also being forced to <em>pay</em> for it.</li>
+<li><strong>Going digital is a great idea — but not everyone has internet.</strong> The government has strong digital tools already in place, but only about 5% of the poorest households have decent internet access [53]. If aid programs only work online, they would miss exactly the people who need help most.</li>
+<li><strong>Corruption fears are slowing everything down.</strong> When surveyed before the President's big yearly speech (called the SONA), fighting corruption was the #1 thing Filipinos wanted to hear about — even more than affordable prices [56]. After a recent corruption scandal, any emergency spending that isn't clearly tracked and published will be doubted, delayed, and resisted at every level.</li>
+</ol>
+
+<p>This report ends with 14 concrete action steps built around one simple idea: <strong>protect frontline services, replace lines with digital verification, and publish exactly where the money goes.</strong> Ten of the fourteen steps don't even require passing a new law — the government can start them right away.
+</p>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">1. What Is This Report About?</h2>
+
+<p><strong>The main question:</strong> How can the Philippine government keep delivering everyday services and help people effectively during this energy emergency — using the people, money, and legal powers it <em>already has</em> (not some imaginary unlimited budget)?
+</p>
+
+<p>This report does <strong>not</strong> try to answer bigger, slower questions like "where should the Philippines buy oil from?" or "should the country build nuclear power plants?" Those are important, but they take 3 to 15 years to play out. This report focuses on something more urgent: <strong>while fuel stays expensive and unpredictable, how does the government keep serving people — especially the poorest — without breaking down?</strong>
+</p>
+
+<strong>What's covered:</strong>
+<ul>
+<li>Keeping essential services running (health care, schools, welfare payments, transportation, ID/registration offices)</li>
+<li>Fixing how the government identifies who should get help and how that help gets paid out</li>
+<li>Government workplace policies (like shorter work weeks) and how permits get approved</li>
+<li>How the ₱155-billion relief fund is paid for</li>
+<li>Being transparent and accountable, because that actually helps aid move faster, not slower</li>
+</ul>
+
+<p><strong>What's not covered:</strong> where to buy oil, nuclear energy policy, currency/interest rate decisions, political scandals and impeachment cases (except where they affect trust), and any criminal investigations.
+</p>
+
+<strong>A few honest assumptions this report makes, spelled out clearly:</strong>
+
+<ul>
+<li><strong>The emergency will likely last through 2027</strong>, not just a few more weeks. The original order lasts one year unless extended [2], and fighting flared up again in late July, making an early end unlikely [44].</li>
+<li><strong>There won't be a big new pile of money.</strong> The government has been clear that the relief fund comes from squeezing savings out of existing budgets, not asking for extra funds [33][34].</li>
+<li><strong>Passing new laws right now will be hard</strong>, so the best first moves are things the government can do on its own, without needing Congress.</li>
+<li><strong>Public trust is running low and needs to be protected.</strong> After a major corruption scandal, being transparent isn't just "nice to have" — it's necessary for aid to actually move.</li>
+</ul>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">2. Who Is Getting Hurt the Most?</h2>
+
+<p>Before we can talk about "essential services," we need to understand exactly who is suffering and how much.
+</p>
+
+<p>The Philippines buys almost all of its oil from other countries — historically, nearly all of it from the Middle East [3][4]. So when a war closed off a key shipping route (the Strait of Hormuz), the Philippines felt the pain almost immediately. By March 24, diesel cost more than ₱130 a liter and gasoline passed ₱100 [4]. Prices for everyday goods (called "inflation") jumped from 2.4% in February to a three-year high of 7.2% in April, before easing down to 6.4% by June [41][42].
+</p>
+
+<strong>Here's the part that matters most: this crisis hits poor people much harder than rich people.</strong>
+
+<p>A government research group called PIDS (Philippine Institute for Development Studies) studied this closely. They found that <strong>poor households are losing 16.2% of their real buying power, while the richest households are only losing 3.4%</strong> [6]. Think of it like this: if a rich family and a poor family both have to pay ₱20 more for a sack of rice, that ₱20 barely dents the rich family's budget — but it might mean the poor family skips a meal. Under the current situation, national poverty could rise from 13.2% to 14.4% — that's about 1.34 million more Filipinos falling into poverty, mostly people who were just barely above the poverty line before [6][7]. In the worst-case scenario, up to 3.5 million more people could become poor [8].
+</p>
+
+<strong>Two important lessons follow from this, and both are easy to miss:</strong>
+
+<p><strong>Lesson 1: The people who need help most are often invisible to the system.</strong> The newly poor are, by definition, people who <em>weren't</em> poor before. They're not already signed up for government assistance programs like 4Ps (a long-running poverty program) or getting a social pension [10]. If the government only helps people already on its lists, it will completely miss the new group of people the crisis itself is creating.
+</p>
+
+<p><strong>Lesson 2: Giving the same discount to everyone is actually unfair.</strong> Cutting fuel taxes for <em>everybody</em> sounds fair, but it isn't. PIDS found that a fuel tax cut gives <strong>about four times more money, in actual pesos, to a rich household than to a poor one</strong> — because rich households use more fuel [6][7]. A smarter idea PIDS proposed: give a one-time cash payment (about ₱6,000) directly to affected households, especially near-poor ones, instead of cutting taxes for everyone. This kind of targeted help could keep about 754,000 people out of poverty for a much smaller price tag [8][9]. Money given directly to poor families also tends to get spent quickly on food and daily needs, which helps the local economy too [7].
+</p>
+
+<p>One researcher, Jose Ramon Albert, pointed out something uncomfortable: <strong>targeted aid can look "unfair" because it means most people have to tighten their belts while companies keep their profits</strong> [11]. If the government asks ordinary people to sacrifice, it also needs to crack down on hoarding and price-gouging by companies — or the whole plan will feel unjust.
+</p>
+
+<p><strong>And here's the most important warning: this is not over.</strong> After a brief ceasefire lowered prices in June, fighting flared up again, and diesel jumped by ₱10.68 per liter in just one week in July [43][44]. Any plan that assumes prices will calm down soon is planning for a world that doesn't exist.
+</p>
+
+<p>> <strong>What this means for design:</strong> Any relief program needs to be able to (1) reach families who have never gotten government help before, (2) scale up and down quickly as prices go up and down, and (3) do this <em>without</em> making people stand in a physical line every single time. The system used from March through May did none of these three things well.
+</p>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">3. Great Plans, Poor Delivery: The Central Problem</h2>
+
+<p>Looking only at <em>policy</em> — meaning what the government decided to do on paper — the Philippines did well. The ADB found the Philippines used <strong>seven out of eight major crisis-response strategies</strong> that experts recommend, including fuel subsidies, targeted help, and staggered price changes. The ADB called it "almost a clean sweep" [38].
+</p>
+
+<p>The main relief plan, called <strong>UPLIFT</strong> (Unified Package for Livelihoods, Industry, Food, and Transport), looks great on paper. It tells the Department of Transportation to expand free rides, extend train hours, and cut toll fees. It tells DSWD to quickly get emergency cash to transport workers, farmers, fishermen, and workers who lost their jobs [1].
+</p>
+
+<strong>Then look at how it actually played out on the ground.</strong>
+
+<p>Starting in late March, drivers of jeepneys, tricycles, and other public vehicles had to show up <em>in person</em> to collect a ₱5,000 payment. In Quezon City, more than 200,000 drivers lined up under the hot sun with not nearly enough shade [13]. The DSWD's own secretary admitted to the Senate that manual ID-checking was slow because the lines were so long — and in the worst cases, people fainted, and some died [12]. A motorcycle-taxi driver died from heat exposure while waiting in line [13]. The lists of who was supposed to get paid were a mess — they even included people who no longer worked as drivers, and some who had already died [13].
+</p>
+
+<p>To be fair, the <em>scale</em> of what got done was real: DSWD paid out ₱5.7 billion to over 1.1 million drivers nationwide [12]. That's a genuinely huge logistical effort. But every single step required a physical presence: printed lists posted at the site, a driver's license photocopied, someone checking names by hand [15].
+</p>
+
+<p>Here's the paradox in one sentence: <strong>the government was fast at deciding what to do, but slow at actually doing it.</strong> For example, it took 48 days from the start of the crisis for a fuel tax suspension to actually take effect — even though Congress had already approved it [61].
+</p>
+
+<p>Even independent observers agree with this pattern: the response was well-intentioned, but also drew real criticism for being inefficient, and civil society groups worried the emergency powers could be misused [58].
+</p>
+
+<p>> <strong>The lesson:</strong> The problem was never that the government didn't care or didn't try. The problem is that a smart, modern plan got delivered through an old-fashioned, slow, in-person counter — and that turned good policy into a health hazard.
+</p>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">4. The Real Problem: Messy Lists, Not Bad Intentions</h2>
+
+<p>Why did DSWD make people line up in person instead of just sending money electronically? <strong>Because they didn't trust their own beneficiary lists.</strong>
+</p>
+
+<p>The DSWD secretary told the Senate that the government could have lost at least <strong>₱2.7 billion</strong> to duplicate names and fake ("ghost") beneficiaries if they hadn't required people to show up in person [12]. He admitted that DSWD had originally <em>wanted</em> to send the ₱5,000 through e-wallets (like GCash), but backed out after finding too many errors in the submitted lists [17].
+</p>
+
+<p><strong>Here's the key insight of this whole report:</strong> Making people stand in line wasn't laziness or incompetence. It was a reasonable reaction to a real problem — bad data. But it was the <em>wrong fix</em> for that problem. And the Philippines already had the right tool sitting unused.
+</p>
+
+<h3 class="subsection-title">4.1 The tools already exist</h3>
+
+<ul>
+<li><strong>PhilSys (the national ID system).</strong> The Philippine national ID — in physical, paper, or digital form — is already a legally valid form of identification for opening bank accounts and passing identity checks [72]. The digital version has a QR code that can instantly confirm who someone is [72]. About <strong>90 million Filipinos</strong> already have a digital national ID [51].</li>
+<li><strong>eGovPH (a government app).</strong> This is a single app, similar to how one banking app can handle several types of transactions, that connects citizens to many government services in one place. It already has <strong>40 million downloads</strong> [51].</li>
+<li><strong>The DSWD Social Registry.</strong> DSWD has been quietly building a system that connects to the national ID and can send payments straight to bank accounts or e-wallets [70]. As of June 2026, one DSWD office was already using this to skip the long lines entirely [71].</li>
+<li><strong>Partnerships with digital wallets.</strong> The government has partnered with GCash (a popular mobile wallet) to help people register and receive payments digitally, even reaching small neighborhoods (called barangays) [72].</li>
+</ul>
+
+<strong>Every tool needed to replace the line with a simple account transfer already existed before the crisis even started.</strong>
+
+<h3 class="subsection-title">4.2 So why wasn't it used?</h3>
+
+<p>Three reasons, and all three are fixable:
+</p>
+
+<ol>
+<li><strong>The lists came from too many different places.</strong> Different agencies submitted their own separate lists — from ride-hailing companies, transportation regulators, and city governments — instead of checking everyone against one master identity system. So duplicate-checking happened at the payout site, by hand, instead of automatically in a computer system beforehand.</li>
+<li><strong>There wasn't enough time.</strong> Payments started just days after the emergency was declared. There was no time to properly connect all the digital systems, so the "backup plan" (manual lines) became the default — and then just... stayed that way.</li>
+<li><strong>A reasonable fear of losing money to fraud.</strong> DSWD wanted to make sure money went straight to the person who needed it, with no middlemen skimming money off the top. Without a <em>trusted</em> digital system already in place, requiring someone's physical presence felt like the only safe option.</li>
+</ol>
+
+<h3 class="subsection-title">4.3 What actually needs to happen</h3>
+
+<p>This does <strong>not</strong> mean building a whole new database from scratch. It means creating one clear process: before any payment goes out, every beneficiary list — no matter which agency it came from — gets checked against the national ID system first. Think of it like a bouncer checking one master guest list instead of five different clipboards. Duplicate-checking becomes something a computer does in seconds, not something a person does by squinting at photocopies in a long line.
+</p>
+
+<p>The math makes the case on its own: the ₱2.7 billion that manual processing supposedly "saved" is roughly the same size as what it would cost to build this digital fix many times over — and unlike a one-time saving, that cost of doing things manually repeats <em>every single time</em> a new round of aid goes out.
+</p>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">5. The Government Cut Energy Use, But Forgot to Protect Key Services</h2>
+
+<p>Even before the emergency was officially declared, the President ordered government offices to cut back on energy use. This rule, known as Memorandum Circular 114, told agencies to save electricity, use government vehicles more efficiently, hold meetings online, and switch to a <strong>four-day workweek</strong> — either a compressed schedule or a rotating work-from-home day. <strong>The goal: cut electricity and fuel use by 10 to 20 percent</strong> [20].
+</p>
+
+<p>Government offices across the country adopted this quickly — from executive offices to city halls to regional agencies, some even lowering their air-conditioning use after 5 p.m. [20]. This was a genuinely impressive, nationwide effort.
+</p>
+
+<strong>But here's the problem: the government only measured what it was <em>cutting</em> — not what it might be <em>breaking</em>.</strong>
+
+<p>The rule sets clear numeric energy-saving targets. But there is <strong>no matching rule</strong> for how long someone should have to wait at a government counter, or a guaranteed minimum number of open days for offices like PhilHealth (health insurance) or the LTO (driver's license office). Each agency was told to write its <em>own</em> internal plan — but with no shared minimum standard, and no requirement to make that plan public.
+</p>
+
+<p><strong>The predictable result: services quietly got worse in an uneven way.</strong> A shorter office week might work fine for behind-the-scenes paperwork. It works terribly for busy, walk-in counters serving people who can't afford to make a wasted trip. And with transport costs still up significantly, a trip to a closed government office is a real cost that falls hardest on the same poor households already struggling [6][42].
+</p>
+
+<p><strong>There's also a fairness issue for government workers themselves.</strong> One employee in Cebu described the four-day workweek meaning longer days, later commutes home, and fewer evenings with family [25]. In other words, some of the "energy savings" didn't disappear — they just got shifted from the government's electricity bill onto employees' personal time and transportation costs.
+</p>
+
+<h3 class="subsection-title">The services that simply can't be compressed</h3>
+
+<p>Some things can't just close for a day. And this is where the emergency exposed a real gap in planning, not just a hard policy choice.
+</p>
+
+<p>In mid-May, about <strong>1.9 million customers</strong> experienced rolling blackouts in the Manila area as the power grid came under serious strain [4][28]. Hospitals and factories switched to backup power. The Philippine General Hospital ran on generators for over six hours, with patients fanning themselves by hand because the power was out [26]. And tragically, outside the hospital, an 80-year-old man with asthma in Laguna province died after a blackout stopped him from using the breathing machine (nebulizer) he needed every day [26].
+</p>
+
+<p><strong>This is the single most important fact in this whole report.</strong> There are people at home who depend on electricity to survive — for oxygen machines, breathing machines, dialysis, and more. Right now, <strong>there is no official list of these people, and no system to warn them in advance</strong> when their power is about to be cut. They are essentially invisible to both the power company and the health system.
+</p>
+
+<p>The good news: part of the solution already exists elsewhere. In February 2026, the Department of Health gave solar-powered generators to health clinics in hard-to-reach areas, specifically to keep emergency care and vaccines running during power cuts [69]. This model works — it just hasn't been made into a nationwide standard yet.
+</p>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">6. Where Does the Relief Money Come From — and Why Is That Risky?</h2>
+
+<p>The way the ₱155-billion relief fund is being paid for is both financially careful <em>and</em> operationally risky at the same time — and both of those things are true for the same reason.
+</p>
+
+<p>The government said this money would <strong>not</strong> come from borrowing more or a special new budget. Instead, it comes from savings squeezed out of <em>existing</em> agency budgets — money that departments weren't planning to spend, or projects being delayed [33][34]. On top of that, every government agency was ordered to <strong>cut its operating costs by 20%</strong>, freeze the purchase of new vehicles (except for health and emergency vehicles), and pause new construction projects that hadn't started yet [32].
+</p>
+
+<strong>This creates three real risks:</strong>
+
+<p><strong>Risk 1: The frontline ends up paying for its own relief effort.</strong> Not every agency has extra money lying around. Agencies that are already struggling (with too few staff or delayed projects) often end up "saving" the most money — but that's usually because they're already stretched thin, not because they have a real surplus. A blanket 20% cut hits a rural health clinic's medical-supply budget just as hard as it hits a central office's travel budget — even though the consequences are wildly different. In effect, money can get pulled <em>away</em> from the very offices that are supposed to deliver the relief, in order to <em>fund</em> that same relief.
+</p>
+
+<p><strong>Risk 2: Delaying construction today can mean delaying services tomorrow.</strong> Freezing "projects that haven't started yet" sounds sensible — until you realize this might include new hospital wings, school buildings, or exactly the kind of solar-panel and battery upgrades that would make government buildings <em>less</em> vulnerable to the next blackout. These lists of delayed projects should be published and reviewed carefully, not applied blindly.
+</p>
+
+<p><strong>Risk 3: The legal foundation is genuinely shaky.</strong> A new law is being proposed to formally allow this kind of budget-shuffling. This matters because a similar approach was used once before (called the Disbursement Acceleration Program), and the Supreme Court later ruled parts of it unconstitutional [34][85]. This is a real legal question, not just a technicality — and if the new law passes without strong disclosure and auditing rules, it inherits both the legal risk <em>and</em> the trust problem left over from a recent corruption scandal.
+</p>
+
+<p>> <strong>Bottom line:</strong> The financial plan itself is reasonable. What's missing is a simple protective rule: a clear line that says frontline service budgets — the ones that keep clinics, schools, and offices running — cannot be raided to pay for the very relief programs those offices are supposed to deliver.
+</p>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">7. Going Digital Is Smart — But Not Everyone Has the Internet</h2>
+
+<p>The best argument for moving government services online during this crisis is simple: it gets rid of the line. The best argument <em>against</em> going online-only is just as simple: it would leave out the poor.
+</p>
+
+<h3 class="subsection-title">7.1 What the government already has</h3>
+
+<p>The Philippines has real digital tools in place. A 2023 law (the E-Governance Act) requires government agencies to offer services online through one connected system [49][50]. The eGovPH app already has 40 million downloads, with a goal of 60 million users by 2028 [51]. The digital national ID now covers roughly 90 million people [51]. Over 1.3 million senior citizens are already using their digital senior ID through the app to get discounts [52]. A nationwide survey found that 85% of adults say they use the internet [84].
+</p>
+
+<h3 class="subsection-title">7.2 What the government doesn't have</h3>
+
+<p>Here's the catch: those big national numbers hide a huge gap. Only <strong>28% of households</strong> had home internet in 2023 — far below neighboring countries like Vietnam (79%) or Thailand (55%) [53]. Worse, the gap is <em>growing</em>: internet access among wealthy households rose from 43% to 60% between 2019 and 2022. Among the <em>poorest</em> households, it barely moved — from 2% up to just <strong>5%</strong> [53]. In rural areas, only 12% of neighborhoods (barangays) even have free Wi-Fi access [54].
+</p>
+
+<p><strong>Put those two facts together, and the conclusion is unavoidable:</strong> the households most likely to fall into poverty from this crisis — rural, near-poor families — are exactly the households <em>least</em> likely to be able to complete an online-only transaction.
+</p>
+
+<h3 class="subsection-title">7.3 The solution: digital in the back, human in the front</h3>
+
+<p>The answer isn't to choose between "digital" and "in-person." It's to combine them the way DSWD has already started experimenting with: <strong>make the transaction itself digital, but keep a friendly human helper at the front.</strong> The actual payment happens through the national ID and a bank account or e-wallet — fast and paperless. But the <em>interface</em> for the person receiving help is still human: someone at a local community center or city office who can help them use the system, using their verified identity.
+</p>
+
+<p>Here's the difference in plain terms: a line exists because the government <em>can't tell who you are</em>. A help desk exists because you need a hand <em>using a system that already knows exactly who you are</em>. The first option takes six hours in the sun. The second takes about ten minutes.
+</p>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">8. Why Fighting Corruption Actually Speeds Things Up</h2>
+
+<p>Normally, being transparent (open and honest about where money goes) is just seen as "good government." But during this crisis, it's more than that — it's a practical requirement for aid to move quickly, for a very specific reason.
+</p>
+
+<p>A survey taken just before the President's big annual speech found that <strong>fighting corruption was the #1 thing Filipinos wanted him to talk about</strong> — 29.8% of people picked it as their top concern, even ahead of affordable prices at 18.7% [56][57]. Public trust in the country's top leaders had dropped below 50% [56]. The President opened his speech by addressing a major corruption scandal involving public infrastructure projects [59].
+</p>
+
+<p><strong>Here's why this matters for delivering aid, specifically:</strong> A large pool of emergency money, gathered quickly from government savings, spent under a brand-new legal process, right after the country's biggest recent corruption scandal — that combination will face resistance and suspicion at <em>every single level</em>. Government agencies will hesitate to hand over their "savings." Lawmakers will slow down approving the new law. Local governments will demand extra paperwork. Civil-society groups will investigate and speak out. Every one of these reactions adds delay — and delay costs real money to households losing purchasing power every single month.
+</p>
+
+<p><strong>This is why transparency is actually the cheapest way to speed things up.</strong> A public, easy-to-check record of exactly where every peso of relief money goes isn't a favor to critics — it's the fastest route to getting the program moving.
+</p>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">9. Four Things That Actually Worked</h2>
+
+<p>The best ideas for fixing a system are often things that system has <em>already proven it can do</em>. Here are four real examples from the past several months.
+</p>
+
+<p><strong>1. "If we're too slow, you're automatically approved."</strong> For rooftop solar panel permits, the Department of Energy set a strict rule: if the government doesn't respond within 10 days, the application is <strong>automatically approved</strong> [63]. This flips the pressure — instead of the person applying suffering from government slowness, the <em>government</em> suffers if it's slow. This is the single smartest reform to come out of this whole crisis, and it could easily be copied for other common permits like business licenses.
+</p>
+
+<p><strong>2. A "traffic light" system for school closures.</strong> The Department of Education created clear, step-by-step rules for when and how much to scale back classes during emergencies — including power outages lasting two or three days [81][83][86]. Instead of guessing, school leaders now follow a clear framework, and they're allowed to make localized decisions based on what's actually happening in their community, rather than waiting for a one-size-fits-all order from the capital.
+</p>
+
+<p><strong>3. Manila's "Libreng Sakay" (free ride) program.</strong> Instead of giving money directly to commuters, Manila's city government paid jeepney drivers a guaranteed daily amount (about ₱3,000–₱3,500) to keep driving and offer free rides [66]. In just over a week, this served nearly a million passengers [65]. The clever part: this pays <em>drivers</em> to keep the service running, instead of trying to hand out money to every individual passenger — solving two problems (driver income and commuter costs) with one simple idea, and requiring zero lines.
+</p>
+
+<p><strong>4. Iloilo City's neighborhood solar power push.</strong> The city council passed a resolution encouraging local neighborhoods to add solar panels to their own operations, cutting electricity costs and reducing vulnerability to blackouts [67]. It's small and cheap, but it's aimed at exactly the level of government closest to ordinary people.
+</p>
+
+<p><strong>What these four all have in common:</strong> they shift the burden of delay onto the <em>institution</em> rather than the <em>person</em>, they let local decision-makers use their own judgment, and they pay to <em>keep things running</em> instead of scrambling to fix things after they break.
+</p>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">10. The Big Picture: Three Simple Rules</h2>
+
+<p>Putting all of this together leads to one diagnosis and three simple operating rules.
+</p>
+
+<p><strong>The diagnosis:</strong> The Philippine government has been good at <em>deciding</em> what to do, okay at <em>funding</em> it, and weak at <em>actually delivering</em> it to people. That weakness isn't spread out everywhere — it's concentrated in three specific spots: how people are identified and verified, how frontline services survive power cuts, and how transparent the whole process is. All three can be fixed using powers the government already has. None of them require the crisis to end first.
+</p>
+
+<p><strong>Rule 1 — Protect the frontline.</strong> When budgets get cut, there needs to be a clear "do not touch" list. Whatever else gets trimmed, it should never be the counter a poor family walks up to for help, the rural clinic that stores vaccines, or the backup power that keeps a hospital ward lit.
+</p>
+
+<p><strong>Rule 2 — Replace the line with a login, not the person with an app.</strong> The goal isn't to force everyone to use a smartphone. It's to move the boring, repetitive work — checking IDs, spotting duplicates, sending payments — into computer systems, so that when a person <em>does</em> show up, the interaction is quick, local, and respectful. The lines exist today because the government couldn't verify people's identities fast enough. It can now. So standing in line is a choice, not a necessity.
+</p>
+
+<p><strong>Rule 3 — Publish where the money goes.</strong> Speed and honesty aren't opposites here — they work together. Publishing every peso of relief spending in an easy-to-check public format is what rebuilds the trust that the recent corruption scandal damaged. And that trust is exactly what determines whether agencies hand over savings on time, whether lawmakers pass the needed bill quickly, and whether people actually believe the beneficiary list is fair.
+</p>
+
+<p><strong>One more big-picture point:</strong> the Philippines doesn't really have an "emergency <em>plan</em>" right now — it has an emergency <em>reaction</em>. The 48-day delay before a tax break kicked in, the rushed and messy beneficiary lists, the workplace rules written <em>after</em> the crisis started — all of these are symptoms of building the airplane while flying it. The single best long-term fix is a <strong>standing emergency playbook</strong>: rules, systems, and registries that are built and tested <em>before</em> the next crisis hits, so the next shock activates a ready-made plan instead of forcing everyone to start from scratch.
+</p>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">11. What Should the Government Do? (14 Action Steps)</h2>
+
+<p>Each recommendation below explains what tool the government would use, who's responsible, how it gets paid for, and how we'd know if it's working. The first six steps need <strong>no new law at all</strong> — they can start immediately.
+</p>
+
+<h3 class="subsection-title">Steps to take in the first 90 days (no new law needed)</h3>
+
+<strong>Step 1 — Make digital payments the default, not the exception.</strong>
+<p>Check every beneficiary list against the national ID system <em>before</em> scheduling any payout. Pay people through a bank account or e-wallet by default. Keep in-person payouts only as a backup option, with priority lanes for seniors, people with disabilities, and pregnant women.
+<em>How it pays for itself:</em> DSWD already says manual processing "saved" ₱2.7 billion in one round of payments [12] — digital verification captures that same saving permanently, without the dangerous lines.
+<em>Success looks like:</em> At least 80% of payments going straight to accounts; median wait time under 3 days; zero heat-related deaths at payout sites.
+</p>
+
+<strong>Step 2 — Build one master list and one complaints hotline.</strong>
+<p>Right now, different agencies keep separate lists. Combine them into one list, with one ID number per person and one place to file a complaint if something's wrong. Also actively enroll the "near-poor" — households that just fell into poverty and aren't on any existing list [6][10].
+<em>Success looks like:</em> Duplicate rate under 1%; complaints resolved within 15 working days.
+</p>
+
+<strong>Step 3 — Set a rule for which services can never go dark.</strong>
+<p>Two parts: (a) Protect hospitals, water utilities, rural clinics, and ID offices from rolling blackouts, and publish blackout schedules in advance so people can prepare; (b) require every government agency people rely on (like health insurance and driver's license offices) to guarantee a minimum number of open service days per week, and <em>publish</em> that plan.
+<em>Success looks like:</em> All protected buildings covered by a published blackout schedule; counters open at least 95% of normal hours.
+</p>
+
+<strong>Step 4 — Create a registry for people who depend on electric medical equipment.</strong>
+<p>People who use ventilators, breathing machines, oxygen machines, or dialysis at home should be able to register with their local health clinic. Power companies would then send them advance warning texts before a scheduled blackout. This directly targets the exact situation that killed a patient in Laguna [26]. It costs almost nothing to set up.
+<em>Success looks like:</em> Registry active in all high-risk provinces within 90 days; at least 90% of registered patients get advance warning texts.
+</p>
+
+<strong>Step 5 — Publish a public, real-time record of where relief money goes.</strong>
+<p>A single public website, updated weekly, showing every peso moved, every contract signed, and every program delayed — broken down by region. Given how much people care about corruption right now [56], this is the cheapest way to build trust and speed things up.
+<em>Success looks like:</em> Updated within 7 days, every time; every emergency contract publicly listed.
+</p>
+
+<strong>Step 6 — Don't apply budget cuts evenly — apply them wisely.</strong>
+<p>Publish the list of delayed projects. Protect anything classified as essential (hospitals, schools, energy-resilience upgrades) from being delayed. Replace the flat 20% budget cut with a smarter one that protects frontline supplies and staff, while cutting deeper into things like travel and office overhead.
+<em>Success looks like:</em> Zero supply shortages at clinics or schools traced back to budget cuts.
+</p>
+
+<h3 class="subsection-title">Steps to take within 3 to 12 months</h3>
+
+<strong>Step 7 — Copy the "automatically approved if too slow" rule everywhere.</strong>
+<p>Apply the same rule used for solar permits [63] to other common government paperwork — business permits, building permits, sanitation permits, and ID documents. Publish how long each local government takes to process these, every month.
+<em>Success looks like:</em> Average processing time cut by 40% or more.
+</p>
+
+<strong>Step 8 — Make critical buildings blackout-proof, paid for by the energy savings themselves.</strong>
+<p>Install solar power and battery backup at hospitals and clinics first, then evacuation centers, water systems, and schools. Pay for it using the same energy savings the government is already required to find — turning a one-time budget cut into an investment that pays for itself over time.
+<em>Success looks like:</em> All major hospitals and half of rural clinics have tested backup power within a year.
+</p>
+
+<strong>Step 9 — Build a network of "digital helpers" for people without internet.</strong>
+<p>Set up local help desks — at city halls, community centers, even post offices — staffed by people who can complete an online government transaction <em>on your behalf</em>, using your verified ID, if you don't have reliable internet at home. Also work with phone companies to make government apps free to use (not counted against a data plan).
+<em>Success looks like:</em> Help desks available in at least 80% of towns and cities; more low-income users successfully using digital services over time.
+</p>
+
+<strong>Step 10 — Give health and welfare offices the same clear emergency playbook schools now have.</strong>
+<p>Copy the "traffic light" system schools use [83][86] for the health and social welfare sectors too: clear rules for scaling back services safely during a crisis, decided in advance instead of improvised in the moment.
+<em>Success looks like:</em> A working framework tested in at least one region within 6 months.
+</p>
+
+<strong>Step 11 — Make the "pay drivers to keep running" model permanent and nationwide.</strong>
+<p>Scale up Manila's free-ride program [65][66] across the whole country — paying transport operators a guaranteed daily rate to keep service running, verified digitally, with daily public ridership numbers.
+<em>Success looks like:</em> The program running in every major city; public transport staying reliable even during the crisis.
+</p>
+
+<h3 class="subsection-title">Bigger, longer-term steps (12 to 24 months, may need new laws)</h3>
+
+<strong>Step 12 — Only pass the new relief-spending law if it includes strict auditing and an expiration date.</strong>
+<p>Given the legal risk mentioned earlier [34][85], any new law authorizing this kind of budget-shuffling should include real-time auditing, mandatory public disclosure, an automatic expiration date once the emergency ends, and a rule protecting frontline budgets from being raided.
+</p>
+
+<strong>Step 13 — Build a permanent "next crisis" playbook and a strategic fuel reserve.</strong>
+<p>Instead of building all the emergency systems from scratch during a crisis (which took 48 days last time [61]), pre-write the rules in advance: automatic tax adjustments, pre-approved spending limits, and a beneficiary list that's ready to go before the next emergency even starts. Pair this with a proper strategic fuel reserve, something the Energy Secretary has already proposed [4].
+</p>
+
+<strong>Step 14 — Reform fuel pricing rules to allow smoothing prices, without full price control.</strong>
+<p>There's a debate between keeping the current free-market fuel pricing system as-is or fully repealing it [4]. A middle path makes more sense: give the government legal authority to temporarily smooth out extreme price spikes, require oil companies to publicly disclose their profit margins and fuel stockpiles, and crack down harder on hoarding — without trying to fully control prices, which the government doesn't have the capacity to manage well.
+</p>
+
+<h3 class="subsection-title">What the government should NOT do</h3>
+
+<ul>
+<li><strong>Don't bring back universal fuel-tax cuts as the main tool.</strong> They give roughly four times more money to rich households than poor ones [6][7], and they eat up money that could go to more targeted help.</li>
+<li><strong>Don't make aid programs digital-only.</strong> With only about 5% internet access among the poorest households [53], a digital-only system would exclude exactly the people it's supposed to help.</li>
+<li><strong>Don't apply the same percentage budget cut to every office.</strong> A 20% cut means something very different for a rural clinic's medical-supply budget than for a central office's travel budget [32].</li>
+<li><strong>Don't count "electricity saved" as success on its own.</strong> Without a published service-quality standard, agencies can hit their energy-saving targets simply by quietly letting service get worse.</li>
+<li><strong>Don't hold another giant in-person payout without shade, water, seating, and priority lines for vulnerable people.</strong> People already died waiting in line [12][13]. If in-person payouts still have to happen sometimes, they need to happen safely.</li>
+</ul>
+
+<h3 class="subsection-title">A simple 9-point scorecard to track progress</h3>
+
+<table>
+<thead><tr>
+<th>#</th>
+<th>What to Track</th>
+<th>Who's Responsible</th>
+<th>Goal</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>How long it takes from application to actual cash in hand</td>
+<td>DSWD</td>
+<td>Under 3 days</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Share of payments made digitally vs. in person</td>
+<td>DSWD / Central Bank</td>
+<td>Over 80%</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Rate of duplicate names on beneficiary lists</td>
+<td>DSWD / Statistics Authority</td>
+<td>Under 1%</td>
+</tr>
+<tr>
+<td>4</td>
+<td>How often government counters are actually open</td>
+<td>Civil Service Commission</td>
+<td>Over 95% of normal hours</td>
+</tr>
+<tr>
+<td>5</td>
+<td>How long common permits take to process</td>
+<td>Anti-Red Tape Authority</td>
+<td>40% faster than before</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Hospitals and clinics with tested backup power</td>
+<td>Health Dept. / Energy Dept.</td>
+<td>100% of major hospitals</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Advance-warning rate for registered at-home patients</td>
+<td>Health Dept. / Energy Regulator</td>
+<td>Over 90%</td>
+</tr>
+<tr>
+<td>8</td>
+<td>How quickly relief spending is published</td>
+<td>Budget Dept.</td>
+<td>Within 7 days</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Share of digital government transactions used by the poorest households</td>
+<td>Info & Communications Tech Dept.</td>
+<td>Rising every quarter</td>
+</tr>
+</tbody></table>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">12. What This Report Might Be Missing</h2>
+
+<p>Being upfront about the limits of this research:
+</p>
+
+<ol>
+<li><strong>This is a fast-moving situation.</strong> This report is based on information available up to July 27, 2026. Fighting flared up again in the Middle East just before that date, so prices and conditions may have already changed by the time you're reading this.</li>
+<li><strong>Some sources are government press releases, which aren't fully independent.</strong> Official government agencies are accurate about <em>what was announced</em>, but they're not neutral judges of <em>how well it actually worked</em>. Wherever possible, this report cross-checked government claims against independent news outlets.</li>
+<li><strong>Some important data simply doesn't exist publicly yet.</strong> There's no published nationwide data on how long people actually wait at government counters, or how many services closed because of the shorter work week. That gap is itself part of the finding — it's exactly why Step 5 (publish everything) matters so much.</li>
+<li><strong>Details about deaths rely on limited news reporting</strong>, not an official government count. There's no single official tally of how many people died or were harmed during payout lines.</li>
+<li><strong>Internet-access statistics are a few years old</strong> (from 2022–2023). Access has likely improved somewhat since then — but the <em>gap</em> between rich and poor households is the lasting pattern, more than the exact percentages.</li>
+<li><strong>Cost estimates are directional, not exact.</strong> This report describes <em>how</em> things could be funded (self-paying, budget savings, energy-savings-backed loans) rather than giving precise line-item costs, since that level of detail isn't publicly available.</li>
+<li><strong>One unreliable source was left out.</strong> One article's population figures didn't add up correctly and was excluded in favor of a more consistent, verified number.</li>
+</ol>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">13. Where This Information Came From</h2>
+
+<p>This report is based on 87 sources: official Philippine government announcements and agencies, independent Philippine news outlets across the political spectrum, international organizations like the Asian Development Bank and World Health Organization, university and government research institutes, and a few reference sources like Wikipedia for background context. The full list below lets you check any fact for yourself — just look up the number in brackets, like [12], next to any claim in this report.
+</p>
+
+<ol>
+<li>Presidential Communications Office. "President Marcos declares State of National Energy Emergency; activates UPLIFT as Whole-of-Government Response Framework." March 2026. https://pco.gov.ph/news_releases/president-marcos-declares-state-of-national-energy-emergency-activates-uplift-as-whole-of-government-response-framework/</li>
+<li>Philippine News Agency. "PBBM declares state of nat'l energy emergency amid global supply risks." 24 March 2026. https://www.pna.gov.ph/articles/1271702</li>
+<li>Asia Times. "Philippines first nation to declare energy emergency amid Iran war." 31 March 2026. https://asiatimes.com/2026/03/philippines-first-nation-to-declare-energy-emergency-amid-iran-war/</li>
+<li>Wikipedia. "2026 Philippine energy crisis." Accessed 27 July 2026. https://en.wikipedia.org/wiki/2026_Philippine_energy_crisis</li>
+<li>Bloomberg. "Philippines Declares Emergency as Energy Supplies Run Short." 25 March 2026. https://www.bloomberg.com/news/articles/2026-03-25/philippines-declares-energy-emergency-as-fuel-supplies-run-short</li>
+<li>Philippine Institute for Development Studies. Policy Note: "Who Suffers Most When Oil Prices Spike." 15 April 2026. https://pids.gov.ph/publication/policy-notes/who-suffers-most-when-oil-prices-spike</li>
+<li>Philippine Daily Inquirer. "PIDS: Energy crisis may push up to 3.1M Filipinos into poverty." 17 April 2026. https://newsinfo.inquirer.net/2213698/pids-energy-crisis-may-push-up-to-3-1m-filipinos-into-poverty</li>
+<li>BusinessMirror (editorial). "Sobering projections: PIDS warns of economic fallout from Middle East tensions." 23 April 2026. https://businessmirror.com.ph/2026/04/23/sobering-projections-pids-warns-of-economic-fallout-from-middle-east-tensions/</li>
+<li>Philstar. "High fuel prices to push 1.34 million Pinoys to poverty." 17 April 2026. https://www.philstar.com/headlines/2026/04/17/2521517/high-fuel-prices-push-134-million-pinoys-poverty</li>
+<li>Manila Bulletin. "Energy crisis risks pushing 1.3-million Filipinos into poverty." 16 April 2026. https://mb.com.ph/2026/04/16/energy-crisis-risks-pushing-13-million-filipinos-into-poverty</li>
+<li>Rappler. "Surging oil prices could push 1.34 million Filipinos into poverty – PIDS." 17 April 2026. https://www.rappler.com/business/pids-surging-oil-prices-impact-filipino-poverty/</li>
+<li>Daily Tribune. "DSWD defends manual fuel payout." 29 April 2026. https://tribune.net.ph/amp/story/2026/04/29/dswd-defends-manual-fuel-payout</li>
+<li>Daily Tribune (editorial). "Ayuda to die for." 20 April 2026. https://tribune.net.ph/2026/04/20/ayuda-to-die-for</li>
+<li>GMA News. "Jeepney, PUV drivers, operators get cash aid from DSWD, DOTr." 25 March 2026. https://www.gmanetwork.com/news/topstories/nation/981281/jeepney-puv-drivers-operators-get-cash-aid-from-dswd-dotr/story/</li>
+<li>Philippine Information Agency. "Fuel subsidy distribution begins for 23,000 Metro Manila jeepney drivers." 26 March 2026. https://pia.gov.ph/news/fuel-subsidy-distribution-begins-for-23000-metro-manila-jeepney-drivers/</li>
+<li>Department of Social Welfare and Development. "DSWD streamlines AICS cash aid process for tricycle drivers affected by oil price hike." 2026. https://www.dswd.gov.ph/dswd-streamlines-aics-cash-aid-process-for-tricycle-drivers-affected-by-oil-price-hike/</li>
+<li>Philippine Daily Inquirer. "'Ghost' drivers stall P5,000 aid release." 30 April 2026. https://newsinfo.inquirer.net/2220591/ghost-drivers-stall-p5000-aid-release</li>
+<li>Philippine Information Agency. "Cash relief assistance helps 2,345 jeepney drivers cope with fuel crisis." 19 May 2026. https://pia.gov.ph/news/cash-relief-assistance-helps-2345-jeepney-drivers-cope-with-fuel-crisis/</li>
+<li>Presidential Communications Office. "Malacañang imposes energy-saving measures for all government agencies." March 2026. https://pco.gov.ph/news_releases/malacanang-imposes-energy-saving-measures-for-all-government-agencies/</li>
+<li>Philippine Information Agency. "Cebu gov't agencies log power use cuts under energy austerity drive." 5 May 2026. https://pia.gov.ph/news/cebu-govt-agencies-log-power-use-cuts-under-energy-austerity-drive/</li>
+<li>Civil Service Commission. Resolution No. 2600838, "Amendment to the Policies on Flexible Work Arrangements in Government." 18 June 2026. https://www.csc.gov.ph/phocadownload/userupload/irmo/policy%20resolutions/2026/CSC%20Resolution%20No.%202600838%20-%20Amendment%20to%20the%20Policies%20on%20Flexible%20Work%20Arrangements%20in%20Governtment%20CSC%20Resolution%20No.%202200209.pdf</li>
+<li>Philstar. "CSC allows 'more flexible' 4-day workweek in government." 17 July 2026. https://www.philstar.com/headlines/2026/07/17/2542680/csc-allows-more-flexible-4-day-workweek-government</li>
+<li>Philippine Daily Inquirer. "Four-day work week starts in some gov't offices." 2 April 2026. https://newsinfo.inquirer.net/2191815/four-day-work-week-starts-in-some-govt-offices</li>
+<li>Bangsamoro Government. "BARMM gov't adopts 4-day workweek to conserve energy; ensures services uninterrupted." March 2026. https://bangsamoro.gov.ph/news/latest-news/barmm-govt-adopts-4-day-workweek-to-conserve-energy-ensures-services-uninterrupted/</li>
+<li>Philippine Information Agency. "Cebu gov't employees embrace four-day workweek amid energy conservation push." 6 May 2026. https://pia.gov.ph/features/cebu-govt-employees-embrace-four-day-workweek-amid-energy-conservation-push/</li>
+<li>The Manila Collegian. "Hospitals, universities bear brownouts amid dim solutions to nat'l energy crisis." May 2026. https://mkule.medium.com/hospitals-universities-bear-brownouts-amid-dim-solutions-to-natl-energy-crisis-225eefd58142</li>
+<li>Gulf News. "Philippines: Rotational brownouts hit Luzon, 'Yellow' alert up in Visayas." 18 May 2026. https://gulfnews.com/amp/story/business/energy/philippines-users-urged-to-conserve-electricity-rotational-brownouts-hit-luzon-yellow-alert-up-in-visayas-as-heatwave-plant-outages-line-failures-push-grid-to-the-brink-1.500544205</li>
+<li>GMA News. "Meralco: 1.9M customers hit by brownouts during May 13 Luzon red alert." 14 May 2026. https://www.gmanetwork.com/news/money/companies/987616/meralco-1-9m-customers-hit-by-brownouts-during-may-13-luzon-red-alert/story/</li>
+<li>Reuters. "Philippines suspends spot power sales as Iran war sends prices soaring." 26 March 2026. https://www.reuters.com/business/energy/philippines-suspends-electricity-market-due-middle-east-conflict-2026-03-26/</li>
+<li>Energy Regulatory Commission. Issuances pursuant to Executive Order No. 110, s. 2026. https://www.erc.gov.ph/Files/Render/issuance/48001</li>
+<li>Manila Bulletin. "DBM taps agency savings to fund relief as energy crisis deepens." 5 May 2026. https://mb.com.ph/2026/05/05/dbm-taps-agency-savings-to-fund-relief-as-energy-crisis-deepens</li>
+<li>Manila Bulletin. "Gov't agencies told to cut spending by 20% to fight energy crisis." 27 April 2026. https://mb.com.ph/2026/04/27/govt-agencies-told-to-cut-spending-by-20-to-fight-energy-crisis</li>
+<li>GMA News. "DBM: P155B funding needed for UPLIFT interventions." 30 April 2026. https://www.gmanetwork.com/news/money/economy/985949/uplift-interventions-middle-east-conflict/story/</li>
+<li>Philippine Daily Inquirer. "Gov't needs P155B to fund proposed Uplift law." 1 May 2026. https://newsinfo.inquirer.net/2221407/govt-needs-p155b-to-fund-proposed-uplift-law</li>
+<li>Department of Budget and Management. National Budget Circular No. 602. April 2026. https://www.dbm.gov.ph/wp-content/uploads/Issuances/2026/National-Budget-Circular/NATIONAL-BUDGET-CIRCULAR-NO-602.pdf</li>
+<li>Department of Budget and Management. National Budget Circular No. 603. May 2026. https://www.dbm.gov.ph/wp-content/uploads/Issuances/2026/National-Budget-Circular/NATIONAL-BUDGET-CIRCULAR-NO.-603.pdf</li>
+<li>Philippine Information Agency. "ADB highlights PH's strong response to global oil challenges." 8 May 2026. https://pia.gov.ph/news/adb-highlights-phs-strong-response-to-global-oil-challenges/</li>
+<li>PTV News. "ADB lauds PBBM admin's response to global oil shock." 5 May 2026. https://ptvnews.ph/adb-lauds-pbbm-admins-response-to-global-oil-shock/</li>
+<li>Daily Tribune. "Philippines Leads Asia-Pacific in Oil Crisis Response, Says ADB." 4 May 2026. https://tribune.net.ph/2026/05/04/philippines-leads-region-in-oil-crisis-response-adb</li>
+<li>Manila Bulletin. "Philippines leads region in oil-shock policy actions—ADB report." 30 April 2026. https://mb.com.ph/2026/04/30/philippines-leads-region-in-oil-shock-policy-actionsadb-report</li>
+<li>Daily Tribune. "ADB backs Philippine response, sees growth resilience." 6 May 2026. https://tribune.net.ph/2026/05/06/adb-backs-philippine-response-sees-growth-resilience</li>
+<li>Rappler. "Inflation eases to 6.4% in June 2026 as fuel, food prices cool." 7 July 2026. https://www.rappler.com/business/inflation-rate-philippines-june-2026/</li>
+<li>Philippine Daily Inquirer. "Oil Price Watch as of July 21, 2026." 21 July 2026. https://newsinfo.inquirer.net/2267322/oil-price-watch-as-of-july-21-2026</li>
+<li>Rappler. "Big fuel price hike set for July 21 as Middle East tensions flare again." 20 July 2026. https://www.rappler.com/business/fuel-prices-adjustments-july-21-2026/</li>
+<li>Philippine Information Agency. "DepEd encourages private schools to lessen energy use." 13 April 2026. https://pia.gov.ph/news/deped-encourages-private-schools-to-lessen-energy-use/</li>
+<li>Department of Education. DepEd Memorandum No. 024, s. 2026. 7 April 2026. https://www.deped.gov.ph/2026/04/07/april-7-2026-dm-024-s-2026-clarifying-the-flexibility-of-private-schools-to-adopt-learning-and-training-delivery-modalities-amid-the-national-energy-emergency/</li>
+<li>Philstar. "DepEd issues emergency learning continuity guidelines." 6 June 2026. https://www.philstar.com/headlines/2026/06/06/2533133/deped-issues-emergency-learning-continuity-guidelines</li>
+<li>UP Center for Integrative and Development Studies. "Policy Pulse: 100% Online Class Policy — Considerations on Higher Educational Response to the National Energy Emergency." 14 April 2026. https://cids.up.edu.ph/100-online-class-policy-considerations-higher-educational-response-national-energy-emergency/</li>
+<li>FilipiKnow. "eGovPH App Guide (2026)." May 2026. https://filipiknow.net/egovph-app-guide-2026-how-to-register-on-your-phone/</li>
+<li>Wikipedia. "E-Governance Act (Republic Act No. 12254)." Accessed 27 July 2026. https://en.wikipedia.org/wiki/E-Governance_Act</li>
+<li>Manila Bulletin. "DICT aims to reach 60 million eGovPH users by 2028." 24 March 2026. https://mb.com.ph/2026/03/24/dict-aims-to-reach-60-million-egovph-users-by-2028</li>
+<li>CoinGeek. "Philippines pushes digital senior ID acceptance via eGovPH app." 25 May 2026. https://coingeek.com/philippines-pushes-digital-senior-id-acceptance-via-egovph-app/</li>
+<li>World Bank. "Unlocking the Philippines' Digital Transformation by Increasing Internet Connectivity." Results Brief, 2 July 2025. https://www.worldbank.org/en/results/2025/07/02/unlocking-the-philippines-digital-transformation-by-increasing-internet-connectivity</li>
+<li>Philippine Institute for Development Studies. "PH gov't still 'very far' from achieving wider internet access." https://pids.gov.ph/details/ph-gov-t-still-very-far-from-achieving-wider-internet-access-dev-t-study-agency</li>
+<li>DataReportal. "Digital 2026: The Philippines." November 2025. https://datareportal.com/reports/digital-2026-philippines</li>
+<li>Philstar. "Corruption tops Filipinos' SONA 2026 wishlist — Pulse Asia." 24 July 2026. https://www.philstar.com/headlines/2026/07/24/2544364/corruption-tops-filipinos-sona-2026-wishlist-pulse-asia</li>
+<li>Rappler. "What do Filipinos want to hear from Marcos' fifth SONA?" 24 July 2026. https://www.rappler.com/philippines/sona-2026-topics-preferred-filipinos-pulse-asia-survey/</li>
+<li>East Asia Forum. "Energy crisis gives Philippine oil deregulation a reality check." 9 June 2026. https://eastasiaforum.org/2026/06/09/energy-crisis-gives-philippine-oil-deregulation-a-reality-check/</li>
+<li>SunStar. "SUMMARY: Ferdinand Marcos Jr.'s SONA 2026." 27 July 2026. https://www.sunstar.com.ph/manila/summary-ferdinand-marcos-jrs-sona-2026</li>
+<li>The Summit Express. "President Marcos' SONA 2026 highlights, summary." 27 July 2026. https://www.thesummitexpress.com/2026/07/president-marcos-sona-2026-highlights-summary.html</li>
+<li>Rappler. "LIVE UPDATES: President Ferdinand Marcos Jr.'s SONA 2026." 27 July 2026. https://www.rappler.com/philippines/news-videos-summary-ferdinand-marcos-jr-state-nation-address-sona-2026/</li>
+<li>GMA News. "SONA 2026: Time to revisit nuclear energy production, says Marcos." 27 July 2026. https://www.gmanetwork.com/news/money/economy/996314/sona-2026-time-to-revisit-nuclear-energy-production-says-marcos/story/</li>
+<li>SolarQuarter. "Philippines DOE Mandates 10-Day Net Metering Approvals Under Energy Emergency." 1 April 2026. https://solarquarter.com/2026/04/01/philippines-doe-mandates-10-day-net-metering-approvals-under-energy-emergency-to-accelerate-rooftop-solar-adoption-and-reduce-power-costs/</li>
+<li>Philippine Information Agency. "DOE Enforces Emergency Measures to Keep Power Stable, Protect Consumers from Price Spikes." 26 March 2026. https://pia.gov.ph/press-release/doe-enforces-emergency-measures-to-keep-power-stable-protect-consumers-from-price-spikes/</li>
+<li>Manila Bulletin (editorial). "Libreng sakay: Spirit of damayan in a crisis." 13 April 2026. https://mb.com.ph/2026/04/13/libreng-sakay-spirit-of-damayan-in-a-crisis</li>
+<li>Manila Bulletin. "Manila LGU raises to P3,500 daily subsidy to 'libreng sakay' PUV drivers." 31 March 2026. https://mb.com.ph/2026/03/31/manila-lgu-increases-subsidy-of-libreng-sakay-participants-to-offset-fuel-price-hike</li>
+<li>Philippine Information Agency. "Iloilo City encourages barangays to shift to solar energy amid power crisis." 28 April 2026. https://pia.gov.ph/news/iloilo-city-encourages-barangays-to-shift-to-solar-energy-amid-power-crisis/</li>
+<li>Rappler. "How Luzon LGUs are implementing energy-saving measures." 30 March 2026. https://www.rappler.com/philippines/luzon/energy-saving-measures/</li>
+<li>Philippine Information Agency. "DOH provides solar-powered generator to enhance power resilience of remote health facilities." 26 February 2026. https://pia.gov.ph/news/luzon/cv/doh-provides-solar-powered-generator-to-enhance-power-resilience-of-remote-health-facilities/</li>
+<li>Department of Social Welfare and Development. "DSWD explores new ID system, other digital reforms to strengthen delivery of social protection services." 30 January 2026. https://www.dswd.gov.ph/dswd-explores-new-id-system-other-digital-reforms-to-strengthen-delivery-of-social-protection-services/</li>
+<li>Philippine Information Agency. "Paghahatid ng ayuda ng DSWD, isang click na lang sa cellphone." 26 June 2026. https://pia.gov.ph/news/paghahatid-ng-ayuda-ng-dswd-isang-click-na-lang-sa-cellphone/</li>
+<li>Philippine Statistics Authority / PhilSys. "PSA Recognized as a Financial Inclusion Catalyst through the National ID." 18 March 2026. https://philsys.gov.ph/psa-recognized-as-a-financial-inclusion-catalyst-through-the-national-id-at-gcash-digital-excellence-awards/</li>
+<li>Philippine News Agency. "Diesel prices may rise by as much as P5/liter this week – DOE." 8 June 2026. https://www.pna.gov.ph/articles/1276821</li>
+<li>BusinessWorld. "Marcos SONA expected to detail plans for energy independence." 26 July 2026. https://bworldonline.com/economy/2026/07/26/765937/marcos-sona-expected-to-detail-plans-for-energy-independence/</li>
+<li>Wikipedia. "2026 State of the Nation Address (Philippines)." Accessed 27 July 2026. https://en.wikipedia.org/wiki/2026_State_of_the_Nation_Address_(Philippines)</li>
+<li>fuelprice.ph. "Philippines Fuel Prices — weekly DOE advisory tracker." June 2026. https://www.fuelprice.ph/</li>
+<li>Philippine News Agency. "Palace: ADB report reflects PBBM's orders to act fast vs. oil shock." 3 May 2026. https://www.pna.gov.ph/articles/1274173</li>
+<li>World Health Organization. "Strengthening Health Systems for Future Emergencies." July 2026. https://www.who.int/palau/news/feature-stories/item/strengthening-health-systems-for-future-emergencies</li>
+<li>Trading Economics. "Philippines Inflation Rate Jumps to 4.1%." 7 April 2026. https://tradingeconomics.com/philippines/inflation-cpi/news/539462</li>
+<li>Gulf News. "Why the Philippines declared a national energy emergency." March 2026. https://gulfnews.com/world/asia/philippines/why-the-philippines-declared-a-national-energy-emergency-1.500485749</li>
+<li>Rappler. "What to expect during class suspensions under DepEd's new guidelines." 11 June 2026. https://www.rappler.com/philippines/department-education-learning-continuity-framework-class-suspensions-june-2026/</li>
+<li>Philippine Information Agency. "Malacañang to push for UPLIFT bill concerning gov't savings, project funding." 28 April 2026. https://pia.gov.ph/news/malacanang-to-push-for-uplift-bill-concerning-govt-savings-project-funding/</li>
+<li>Philippine News Agency. "DepEd issues new learning continuity guidelines during emergencies." 5 June 2026. https://www.pna.gov.ph/articles/1276695</li>
+<li>Pulse Asia Research Inc. Survey releases, July 2026. https://pulseasia.ph/</li>
+<li>Philippine Daily Inquirer. "DBM: Gov't needs P155B to fund programs under Uplift bill." 1 May 2026. https://newsinfo.inquirer.net/2221096/dbm-govt-needs-p155b-to-fund-programs-under-uplift-bill</li>
+<li>Philippine Information Agency. "DepEd issues guidelines on learning continuity during emergencies." 8 June 2026. https://pia.gov.ph/news/deped-issues-guidelines-on-learning-continuity-during-emergencies/</li>
+<li>GMA News. "DepEd allows private schools to shift to blended learning amid energy cost surge." 9 April 2026. https://www.gmanetwork.com/news/topstories/nation/983241/deped-allows-private-schools-to-shift-to-blended-learning-amid-energy-cost-surge/story/</li>
+</ol>
+
+<p>---
+</p>
+
+</div>
+<div class="section"><h2 class="section-title">14. How I Put This Report Together</h2>
+
+<p><strong>In short:</strong> I gathered information in stages — first figuring out exactly what question to answer, then searching many different sources, then double-checking facts against each other, and finally organizing everything into this report.
+</p>
+
+<strong>Step-by-step:</strong>
+
+<ol>
+<li><strong>Deciding the focus.</strong> Instead of focusing on energy policy (like where to buy oil), I focused this report on <em>government service delivery</em> — how well everyday help actually reaches people.</li>
+<li><strong>Planning the research.</strong> I identified ten different angles to investigate: things like the legal emergency declaration, poverty impacts, how aid gets paid out, government workplace rules, funding sources, digital tools, internet access gaps, schools and hospitals, city/local government responses, and public trust.</li>
+<li><strong>Gathering information.</strong> I searched government websites, official announcements, independent news outlets, and research institutions — comparing government self-reports against independent reporting whenever possible.</li>
+<li><strong>Double-checking facts.</strong> Every major claim in this report was checked against at least three independent sources where possible. When government sources and independent news disagreed — for example, official praise versus reports of people suffering in line — I included both sides, because that gap itself became one of the most important findings.</li>
+<li><strong>Adjusting the outline.</strong> My original plan included more about energy-supply strategy (like where to buy oil). As I gathered evidence, I realized the <em>delivery</em> problems (queue deaths, messy lists, no continuity rules) were both more significant and less discussed elsewhere — so I shifted focus toward those issues instead.</li>
+<li><strong>Stress-testing the findings.</strong> I asked tough questions from three points of view: a frontline social-welfare worker asking "would digital payments really have worked back in March?", a skeptical reviewer asking "are you sure the shorter work week actually hurt services, or are you guessing?", and a practical government staffer asking "can these recommendations actually be done without a new law?" Each of these questions shaped how the final recommendations were written and phrased.</li>
+<li><strong>Checking for anything new.</strong> Right before finishing, I searched for the latest fuel prices and news, which is how the July price spike made it into this report — reinforcing that the crisis is still ongoing, not winding down.</li>
+</ol>
+
+<p><strong>Where the information came from:</strong> Out of 87 sources, 28 are official Philippine government sources, 34 are independent Philippine news outlets, 4 are international organizations, 6 are research institutes, 5 are international media, and 10 are reference or background sources. Most sources (78 of them) are from February through July 2026 — right in the middle of the crisis this report is about.
+</p>
+
+</div>
+
+            <div class="bibliography">
+                <div class="section-title">Bibliography</div>
+                
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
